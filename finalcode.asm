@@ -277,3 +277,4 @@ END
 ; jumble up the components here and there
 ; take different transistor and different voltage value at current source
 ; make report making sure that all the required headings are present(address map, etc.)
+; remove the faltu LED-RED

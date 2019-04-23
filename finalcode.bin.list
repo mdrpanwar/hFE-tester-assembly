@@ -1,0 +1,289 @@
+EMU8086 GENERATED LISTING. MACHINE CODE <- SOURCE.
+ 
+finalcode.bin -- emu8086 assembler version: 4.08  
+ 
+[ 21-04-2019  --  17:56:46 ] 
+ 
+===================================================================================================
+[LINE]     LOC: MACHINE CODE                          SOURCE
+===================================================================================================
+ 
+[   1]        :                                       #make_bin#
+[   2]        :                                       #LOAD_SEGMENT=FFFFh#
+[   3]        :                                       #LOAD_OFFSET=0000h#
+[   4]        :                                       
+[   5]        :                                       #CS=0000h#
+[   6]        :                                       #IP=0000h#
+[   7]        :                                       
+[   8]        :                                       #DS=0000h#
+[   9]        :                                       #ES=0000h#
+[  10]        :                                       
+[  11]        :                                       #SS=0000h#
+[  12]        :                                       #SP=FFFEh#
+[  13]        :                                       
+[  14]        :                                       #AX=0000h#
+[  15]        :                                       #BX=0000h#
+[  16]        :                                       #CX=0000h#
+[  17]        :                                       #DX=0000h#
+[  18]        :                                       #SI=0000h#
+[  19]        :                                       #DI=0000h#
+[  20]        :                                       #BP=0000h#
+[  21]        :                                       .MODEL TINY
+[  22]    0100: EB 15                                 .DATA
+[  23]        :                                       
+[  24]        :                                       ;8253 USED TO GENERATE CLOCK FOR ADC
+[  25]        :                                       CNT0 EQU 20H
+[  26]        :                                       CREG EQU 26H
+[  27]        :                                       
+[  28]        :                                       ;8255(1)  INITIALISE
+[  29]        :                                       PORT1A EQU 00H 	;CONTROLLING THE LCD
+[  30]        :                                       PORT1B EQU 02H 	;INPUT TO LCD
+[  31]        :                                       PORT1C EQU 04H 	;UPPER - ROW
+[  32]        :                                       		              	;LOWER - COLUMN
+[  33]        :                                       CREG1 EQU 06H
+[  34]        :                                       
+[  35]        :                                       ;8255(2) USED FOR ADC, ALARM AND SWITCH
+[  36]        :                                       
+[  37]        :                                       PORT2A EQU 10H 	;INPUT TO DI DEVICE
+[  38]        :                                       PORT2B EQU 12H 	;ADC
+[  39]        :                                       PORT2C EQU 14H 	;PC1 - SOC OF ADC
+[  40]        :                                       ;PC2 - ALARM
+[  41]        :                                       ;PC3 - ADDC OF ADC (USED FOR SELECTING THE ;FIRST INPUT CHANNEL OF ADC)
+[  42]        :                                       ;PC5 - EOC OF ADC
+[  43]        :                                       CREG2 EQU 16H
+[  44]        :                                       
+[  45]    0102: EE ED EB E7 DE DD DB D7 BE BD BB B7   TABLE_K DB 0EEH,0EDH,0EBH,0E7H,0DEH,0DDH,0DBH,0D7H,0BEH,0BDH,0BBH,0B7H,7EH,7DH,7BH,77H
+                7E 7D 7B 77                         
+[  46]    0112: 20 20 20                              DAT2 DB 3 DUP(" ");
+[  47]    0115: 30 31                                 T DB 30H,31H
+[  48]    0117:                                       .CODE
+[  49]    0117:                                       .STARTUP
+[  50]        :                                       
+[  51]    0117: B0 16                                 MOV AL,00010110B ;INITIALIZING 8253
+[  52]    0119: E6 26                                 OUT CREG,AL
+[  53]    011B: B0 05                                 MOV AL,5
+[  54]    011D: E6 20                                 OUT CNT0,AL
+[  55]        :                                       
+[  56]    011F: B0 88                                 MOV AL,10001000B ;INITIALIZING 8255(1)
+[  57]    0121: E6 06                                 OUT CREG1,AL
+[  58]    0123: E8 F4 00                              CALL DELAY_2MS
+[  59]        :                                       
+[  60]    0126: B0 8A                                 MOV AL,10001010B ;INITIALIZING 8255(2)
+[  61]    0128: E6 16                                 OUT CREG2,AL
+[  62]    012A: E8 ED 00                              CALL DELAY_2MS
+[  63]        :                                       
+[  64]        :                                       
+[  65]    012D: E4 04                                 KX1: IN AL,PORT1C
+[  66]    012F: 24 80                                 AND AL,80H
+[  67]    0131: 3C 80                                 CMP AL,80H
+[  68]    0133: 75 F8                                 JNZ KX1
+[  69]        :                                       
+[  70]    0135: B0 20                                 MOV AL,20H
+[  71]    0137: E6 10                                 OUT PORT2A,AL
+[  72]        :                                       
+[  73]    0139: B0 06                                 MOV AL,06H	;GIVE ADC	
+[  74]    013B: E6 16                                 OUT CREG2,AL
+[  75]        :                                       
+[  76]    013D: B0 00                                 MOV AL,00H	;GIVE ALE
+[  77]    013F: E6 16                                 OUT CREG2,AL
+[  78]        :                                       
+[  79]    0141: B0 02                                 MOV AL,02H	;GIVE SOC
+[  80]    0143: E6 16                                 OUT CREG2,AL
+[  81]        :                                       
+[  82]    0145: B0 01                                 MOV AL,01H
+[  83]    0147: E6 16                                 OUT CREG2,AL
+[  84]        :                                       
+[  85]    0149: B0 03                                 MOV AL,03H
+[  86]    014B: E6 16                                 OUT CREG2,AL
+[  87]        :                                       
+[  88]    014D: B0 02                                 MOV AL,02H	;GIVE SOC
+[  89]    014F: E6 16                                 OUT CREG2,AL	
+[  90]        :                                       
+[  91]    0151: B0 00                                 MOV AL,00H	;GIVE ALE
+[  92]    0153: E6 16                                 OUT CREG2,AL
+[  93]        :                                       
+[  94]    0155:                                       LOOP2:
+[  95]    0155: E4 14                                 IN AL,PORT2C
+[  96]    0157: E8 C0 00                              CALL DELAY_2MS
+[  97]    015A: 24 20                                 AND AL,20H ;CHECK FOR EOC
+[  98]    015C: 3C 20                                 CMP AL,20H
+[  99]    015E: 75 F5                                 JNZ LOOP2
+[ 100]    0160: E8 B7 00                              CALL DELAY_2MS
+[ 101]        :                                       
+[ 102]    0163: B0 8A                                 MOV AL,10001010B ;INITIALIZING 8255(2)
+[ 103]    0165: E6 16                                 OUT CREG2,AL
+[ 104]    0167: E4 12                                 IN AL,PORT2B ;AL HAS THE VOLTAGE DROP ACROSS THE RESISTOR
+[ 105]    0169: F6 D0                                 NOT AL
+[ 106]        :                                       
+[ 107]    016B: E8 26 00                              CALL HFE
+[ 108]    016E: E8 2E 00                              CALL FUNC
+[ 109]    0171: E8 05 00                              CALL ALARM
+[ 110]        :                                       
+[ 111]        :                                       
+[ 112]    0174: B8 00 4C CD 21                        .EXIT
+[ 113]        :                                       
+[ 114]    0179:                                       ALARM PROC NEAR
+[ 115]    0179: 3C 32                                 CMP AL,50
+[ 116]    017B: 73 0B                                 JNB Z2
+[ 117]    017D: B0 05                                 MOV AL,05H
+[ 118]    017F: E6 16                                 OUT CREG2,AL
+[ 119]        :                                       
+[ 120]    0181: E8 A8 00                              CALL DELAY_2S
+[ 121]        :                                       
+[ 122]    0184: B0 04                                 MOV AL,04H
+[ 123]    0186: E6 16                                 OUT CREG2,AL
+[ 124]    0188:                                       Z2:
+[ 125]    0188: B9 0A 00                              MOV CX,10
+[ 126]    018B:                                       Z3:
+[ 127]    018B: E8 9E 00                              CALL DELAY_2S
+[ 128]    018E: E2 FB                                 LOOP Z3
+[ 129]    0190: E8 99 00                              CALL DELAY_2S
+[ 130]    0193: C3                                    RET
+[ 131]        :                                       ALARM ENDP
+[ 132]        :                                       
+[ 133]    0194:                                       HFE PROC NEAR
+[ 134]    0194: B3 2D                                 MOV BL,2DH
+[ 135]    0196: F6 E3                                 MUL BL
+[ 136]    0198: B3 33                                 MOV BL,033H
+[ 137]    019A: F6 F3                                 DIV BL
+[ 138]    019C: B4 00                                 MOV AH,00H
+[ 139]        :                                       
+[ 140]    019E: C3                                    RET
+[ 141]        :                                       HFE ENDP
+[ 142]        :                                       
+[ 143]        :                                       
+[ 144]    019F:                                       FUNC PROC NEAR
+[ 145]    019F: 50                                    PUSH AX
+[ 146]    01A0: B0 38                                 MOV AL,38H
+[ 147]    01A2: E8 58 00                              CALL COMNDWRT
+[ 148]    01A5: E8 79 00                              CALL DELAY
+[ 149]    01A8: E8 76 00                              CALL DELAY
+[ 150]    01AB: E8 73 00                              CALL DELAY
+[ 151]    01AE: B0 0E                                 MOV AL,0EH
+[ 152]    01B0: E8 4A 00                              CALL COMNDWRT
+[ 153]        :                                       
+[ 154]    01B3: B0 01                                 MOV AL, 01  ;CLEAR LCD
+[ 155]    01B5: E8 45 00                              CALL COMNDWRT
+[ 156]    01B8: E8 66 00                              CALL DELAY
+[ 157]    01BB: E8 63 00                              CALL DELAY
+[ 158]        :                                       
+[ 159]    01BE: 58                                    POP AX
+[ 160]    01BF: 50                                    PUSH AX
+[ 161]    01C0: BF 12 01                              LEA DI,DAT2
+[ 162]    01C3: BB 64 00                              MOV BX,100D
+[ 163]    01C6: BA 00 00                              MOV DX,0
+[ 164]    01C9: F7 F3                                 DIV BX
+[ 165]    01CB: 04 30                                 ADD AL,30H
+[ 166]    01CD: E8 3A 00                              CALL DATWRIT ;ISSUE IT TO LCD
+[ 167]    01D0: E8 4E 00                              CALL DELAY
+[ 168]    01D3: E8 4B 00                              CALL DELAY
+[ 169]    01D6: 8B C2                                 MOV AX,DX
+[ 170]    01D8: BB 0A 00                              MOV BX,10D
+[ 171]    01DB: BA 00 00                              MOV DX,0
+[ 172]    01DE: F7 F3                                 DIV BX
+[ 173]    01E0: 04 30                                 ADD AL,30H
+[ 174]    01E2: E8 25 00                              CALL DATWRIT
+[ 175]    01E5: E8 39 00                              CALL DELAY
+[ 176]    01E8: E8 36 00                              CALL DELAY
+[ 177]    01EB: 8B C2                                 MOV AX,DX
+[ 178]    01ED: BA 00 00                              MOV DX,0
+[ 179]    01F0: 04 30                                 ADD AL,30H
+[ 180]    01F2: E8 15 00                              CALL DATWRIT
+[ 181]    01F5: E8 29 00                              CALL DELAY
+[ 182]    01F8: E8 26 00                              CALL DELAY
+[ 183]    01FB: 58                                    POP AX
+[ 184]        :                                       
+[ 185]    01FC: C3                                    RET
+[ 186]        :                                       FUNC ENDP
+[ 187]        :                                       
+[ 188]    01FD:                                       COMNDWRT PROC ;THIS PROCEDURE WRITES COMMANDS TO LCD
+[ 189]    01FD: E6 02                                 OUT PORT1B, AL  ;SEND THE CODE TO PORT A
+[ 190]    01FF: B0 04                                 MOV AL, 00000100B ;RS=0,R/W=0,E=1 FOR H-TO-L PULSE
+[ 191]    0201: E6 00                                 OUT PORT1A, AL
+[ 192]    0203: 90                                    NOP
+[ 193]    0204: 90                                    NOP	
+[ 194]    0205: B0 00                                 MOV AL, 00000000B ;RS=0,R/W=0,E=0 FOR H-TO-L PULSE
+[ 195]    0207: E6 00                                 OUT PORT1A, AL
+[ 196]    0209: C3                                    RET
+[ 197]        :                                       COMNDWRT ENDP
+[ 198]        :                                       
+[ 199]    020A:                                       DATWRIT PROC NEAR
+[ 200]    020A: 52                                    	PUSH DX  ;SAVE DX
+[ 201]    020B: BA 02 00                              	MOV DX,PORT1B  ;DX=PORT A ADDRESS
+[ 202]    020E: EE                                    	OUT DX, AL ;ISSUE THE CHAR TO LCD
+[ 203]    020F: B0 05                                 	MOV AL, 00000101B ;RS=1, R/W=0, E=1 FOR H-TO-L PULSE
+[ 204]    0211: BA 00 00                              	MOV DX, PORT1A ;PORT B ADDRESS
+[ 205]    0214: EE                                    	OUT DX, AL  ;MAKE ENABLE HIGH
+[ 206]    0215: B0 01                                 	MOV AL, 00000001B ;RS=1,R/W=0 AND E=0 FOR H-TO-L PULSE
+[ 207]    0217: EE                                    	OUT DX, AL
+[ 208]    0218: 5A                                    	POP DX
+[ 209]    0219: C3                                    	RET
+[ 210]        :                                       DATWRIT ENDP ;WRITING ON THE LCD ENDS
+[ 211]        :                                       
+[ 212]    021A:                                       DELAY_2MS PROC NEAR
+[ 213]    021A: B9 64 00                              MOV CX,100
+[ 214]    021D: 90                                    HER: NOP
+[ 215]    021E: E2 FD                                 LOOP HER
+[ 216]    0220: C3                                    RET
+[ 217]        :                                       DELAY_2MS ENDP
+[ 218]        :                                       
+[ 219]        :                                       ;DELAY IN THE CIRCUIT HERE THE DELAY OF 20 MILLISECOND IS PRODUCED
+[ 220]    0221:                                       DELAY PROC
+[ 221]    0221: B9 2D 05                              	MOV CX, 1325 ;1325*15.085 USEC = 20 MSEC
+[ 222]    0224:                                       	W1:
+[ 223]    0224: 90                                    		NOP
+[ 224]    0225: 90                                    		NOP
+[ 225]    0226: 90                                    		NOP
+[ 226]    0227: 90                                    		NOP
+[ 227]    0228: 90                                    		NOP
+[ 228]    0229: E2 F9                                 	LOOP W1
+[ 229]    022B: C3                                    	RET
+[ 230]        :                                       DELAY ENDP
+[ 231]        :                                       
+[ 232]    022C:                                       DELAY_2S PROC
+[ 233]    022C: B9 65 81                              	MOV CX, 33125D
+[ 234]    022F:                                       	W2:
+[ 235]    022F: 90                                    		NOP
+[ 236]    0230: 90                                    		NOP
+[ 237]    0231: 90                                    		NOP
+[ 238]    0232: 90                                    		NOP
+[ 239]    0233: 90                                    		NOP
+[ 240]    0234: E2 F9                                 	LOOP W2
+[ 241]    0236: B9 65 81                              		MOV CX, 33125D
+[ 242]    0239:                                       	W3:
+[ 243]    0239: 90                                    		NOP
+[ 244]    023A: 90                                    		NOP
+[ 245]    023B: 90                                    		NOP
+[ 246]    023C: 90                                    		NOP
+[ 247]    023D: 90                                    		NOP
+[ 248]    023E: E2 F9                                 	LOOP W3
+[ 249]    0240: B9 65 81                              		MOV CX, 33125D
+[ 250]    0243:                                       	W4:
+[ 251]    0243: 90                                    		NOP
+[ 252]    0244: 90                                    		NOP
+[ 253]    0245: 90                                    		NOP
+[ 254]    0246: 90                                    		NOP
+[ 255]    0247: 90                                    		NOP
+[ 256]    0248: E2 F9                                 	LOOP W4
+[ 257]    024A: B9 65 81                              		MOV CX, 33125D
+[ 258]    024D:                                       	W5:
+[ 259]    024D: 90                                    		NOP
+[ 260]    024E: 90                                    		NOP
+[ 261]    024F: 90                                    		NOP
+[ 262]    0250: 90                                    		NOP
+[ 263]    0251: 90                                    		NOP
+[ 264]    0252: E2 F9                                 	LOOP W5
+[ 265]    0254: C3                                    	RET
+[ 266]        :                                       DELAY_2S ENDP
+[ 267]        :                                       END
+[ 268]        :                                       
+[ 269]        :                                       
+[ 270]        :                                       
+ 
+===================================================================================================
+ 
+
+
+
+
+===================================================================================================

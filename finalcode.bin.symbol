@@ -1,0 +1,31 @@
+< THE SYMBOL TABLE >  finalcode.bin  --  emu8086 assembler version: 4.08 
+===================================================================================================
+Name                     	Offset    	Size      	Type      	Segment   
+===================================================================================================
+TABLE_K                  	00102     	1         	VAR       	(NOSEG)   
+DAT2                     	00112     	1         	VAR       	(NOSEG)   
+T                        	00115     	1         	VAR       	(NOSEG)   
+CODE                     	00117     	-1        	LABEL     	(NOSEG)   
+STARTUP                  	00117     	-1        	LABEL     	(NOSEG)   
+KX1                      	0012D     	-1        	LABEL     	(NOSEG)   
+LOOP2                    	00155     	-1        	LABEL     	(NOSEG)   
+ALARM                    	00179     	-1        	NEAR      	(NOSEG)   
+Z2                       	00188     	-1        	LABEL     	(NOSEG)   
+Z3                       	0018B     	-1        	LABEL     	(NOSEG)   
+HFE                      	00194     	-1        	NEAR      	(NOSEG)   
+FUNC                     	0019F     	-1        	NEAR      	(NOSEG)   
+COMNDWRT                 	001FD     	-1        	NEAR      	(NOSEG)   
+DATWRIT                  	0020A     	-1        	NEAR      	(NOSEG)   
+DELAY_2MS                	0021A     	-1        	NEAR      	(NOSEG)   
+HER                      	0021D     	-1        	LABEL     	(NOSEG)   
+DELAY                    	00221     	-1        	NEAR      	(NOSEG)   
+W1                       	00224     	-1        	LABEL     	(NOSEG)   
+DELAY_2S                 	0022C     	-1        	NEAR      	(NOSEG)   
+W2                       	0022F     	-1        	LABEL     	(NOSEG)   
+W3                       	00239     	-1        	LABEL     	(NOSEG)   
+W4                       	00243     	-1        	LABEL     	(NOSEG)   
+W5                       	0024D     	-1        	LABEL     	(NOSEG)   
+===================================================================================================
+[ 21-04-2019  --  17:56:46 ] 
+< END >
+ 
